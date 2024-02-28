@@ -2,6 +2,8 @@ import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { LiveAnnouncer} from '@angular/cdk/a11y';
 import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import * as PokerEvaluator from 'poker-evaluator-ts';
+import { PlayerHandSim, Index,  ResultAtCount } from '../card.model'
 
 export interface PeriodicElement {
   name: string;
@@ -32,13 +34,53 @@ const ELEMENT_DATA: PeriodicElement[] = [
 export class TableComponent {
 	displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = new MatTableDataSource(ELEMENT_DATA);
-
   constructor(private _liveAnnouncer: LiveAnnouncer) {}
 
   @ViewChild(MatSort) sort: MatSort;
 
   ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
+    try{
+      this.dataSource.sort = this.sort;
+      let deck:string[]=['As', 'Ah', 'Ac','Ad','Ks', 'Kh', 'Kc','Kd','Qs', 'Qh', 'Qc','Qd','Js', 'Jh', 'Jc','Jd', 'Ts', 'Th', 'Tc','Td','9s', '9h', '9c','9d','8s', '8h', '8c','8d','7s', '7h', '7c','7d','6s', '6h', '6c','6d','5s', '5h', '5c','5d','4s', '4h', '4c','4d','3s', '3h', '3c','3d','2s', '2h', '2c','2d'];
+      let index:number[]=[2,2,-6,1,1,-6,1,1,1,1,1,1,1];
+      let playerCard= new PlayerHandSim('Qs', '9h', index);
+
+      let workingDeck:string[]= deck.filter((card)=> card !== playerCard.card1 && card!==playerCard.card2 );
+
+      console.log("UnShuffled card is " + workingDeck);
+
+      ShuffleArray(workingDeck);
+      console.log("Shuffled card is " + workingDeck);
+
+      let flop:string[]=workingDeck.slice(0,3);
+      console.log("flop cards is " + flop);
+
+      let river:string[]=workingDeck.slice(3,5);
+      console.log("river cards is " + river);
+
+      let deadCards:string[]=workingDeck.slice(5,15);
+      console.log("Deadcards cards is " + deadCards);
+
+      let dealerCards:string[]=workingDeck.slice(15,17);
+      console.log("dealCards cards is " + dealerCards);
+    }
+
+    catch(error){
+
+    }
+
+    // console.log("UnShuffled card is" + shuffled);
+    // ShuffleArray(shuffled);
+
+    // console.log("Shuffled card is" + shuffled);
+    // console.log(shuffled[1]);
+    // let playerCard:string[]= ['As', 'Ks']
+    // console.log("player cards are" + playerCard);
+    // console.log("Shuffled card is" + shuffled);
+    // let filteredCard:string[]= shuffled.filter((card)=> card !== playerCard[0] && card!==playerCard[1] )
+    // console.log("Filtered Card is" + filteredCard);
+
+
   }
 
   /** Announce the change in sort state for assistive technology. */
@@ -52,5 +94,13 @@ export class TableComponent {
     } else {
       this._liveAnnouncer.announce('Sorting cleared');
     }
+  }
+
+
+}
+function ShuffleArray(array:string[]) {
+  for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
   }
 }
