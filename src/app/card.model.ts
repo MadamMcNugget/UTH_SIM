@@ -1,25 +1,63 @@
-
 export class PlayerHandSim {
-  card1: string;
-  card2: string;
+  cards: string[];
   index: Index;
-  resultsAtCount: ResultAtCount[];
-  totalBasicBet: number= 0;
-  totalBasicNet: number= 0;
-  totalAdvancedBet:number= 0;
-  totalAdvancedNet:number= 0;
-  constructor(card1:string, card2:string, index:number[]){
-    this.card1= card1;
-    this.card2= card2;
-    console.log('here2');
+  resultsAtCount: ResultAtCount[] = [];
+  totalCheckBet: number= 0;
+  totalCheckNet: number= 0;
+  totalFourBet:number= 0;
+  totalFourNet:number= 0;
+  occurrence:number = 0;
+  constructor(cards:string[], index:number[]){
+    this.cards= cards;
+
     this.index= new Index(index);
   }
-  public win(count:ResultAtCount, bet:number, qualify:boolean, bonus:number) {
+  public ResolveBet(count:number, checkBetAmount:number, handResult:HandResult) {
+    this.occurrence++;
 
-  }
-  public lose(count:ResultAtCount, bet:number, qualify:boolean){
+    let countIndex:number = this.resultsAtCount.findIndex((element)=> element.count == count);
+    if (countIndex === -1) {
+      this.resultsAtCount.push (new ResultAtCount(count))
+      countIndex = this.resultsAtCount.length - 1
+    }
+    this.resultsAtCount[countIndex].UpdateResultAtCount(checkBetAmount, handResult)
 
+
+
+    if (handResult.isWin == 1){
+      this.totalCheckBet = this.totalCheckBet + checkBetAmount + 2;
+      this.totalFourBet = this.totalFourBet + 4 + 2;
+
+      this.totalCheckNet = this.totalCheckNet + checkBetAmount + handResult.bonus;
+      this.totalFourNet = this.totalFourNet + 4 + handResult.bonus;
+
+      if (handResult.isQualify){
+        this.totalCheckNet++
+        this.totalFourNet++
+      }
+    }
+    else if (handResult.isWin == -1){
+      this.totalCheckBet = this.totalCheckBet + checkBetAmount + 2;
+      this.totalFourBet = this.totalFourBet + 4 + 2;
+
+      this.totalCheckNet = this.totalCheckNet - checkBetAmount -1;
+      this.totalFourNet = this.totalFourNet - 4  -1;
+
+      if (handResult.isQualify){
+        this.totalCheckNet--
+        this.totalFourNet--
+      }
+
+    }
+    else if (handResult.isWin ==0){
+      this.totalCheckBet = this.totalCheckBet + checkBetAmount + 2;
+      this.totalFourBet = this.totalFourBet + 4 + 2;
+    }
+    else{
+      throw Error;
+    }
   }
+
 }
 
 export class Index{
@@ -44,16 +82,62 @@ export class Index{
       ['3', index[11]],
       ['2', index[12]]
     ]);
-     console.log(this.indexMap.get('2'));
+//     console.log(this.indexMap.get('2'));
   }
 }
 
 export class ResultAtCount{
   count:number;
-  basicNet:number;
-  basicBet:number;
-  devianceNet:number;
-  devianceBet:number;
-  occurrence:number;
+  checkNet:number = 0;
+  checkBet:number = 0;
+  fourNet:number = 0;
+  fourBet:number = 0;
+  occurrence:number = 0;
+  constructor(count:number) {
+    this.count=count;
+  }
+  public UpdateResultAtCount(checkBetAmount:number, handResult:HandResult) {
+    this.occurrence++
+
+    if (handResult.isWin == 1){
+      this.checkNet = this.checkNet + checkBetAmount + handResult.bonus;
+      this.checkBet = this.checkBet + checkBetAmount + 2;
+
+      this.fourNet = this.fourNet + 4 + handResult.bonus;
+      this.fourBet = this.fourBet + 4 + 2;
+      if (handResult.isQualify){
+        this.checkNet++
+        this.fourNet++
+      }
+    }
+    else if (handResult.isWin == -1){
+      this.checkBet = this.checkBet + checkBetAmount + 2;
+      this.fourBet = this.fourBet + 4 + 2;
+
+      this.checkNet = this.checkNet - checkBetAmount -1;
+      this.fourNet = this.fourNet - 4  -1;
+
+      if (handResult.isQualify){
+        this.checkNet--
+        this.fourNet--
+      }
+    }
+    else if (handResult.isWin ==0){
+      this.checkBet = this.checkBet + checkBetAmount + 2;
+      this.fourBet = this.fourBet + 4 + 2;
+    }
+  }
 }
 
+
+export class HandResult{
+  isWin:number;
+  isQualify:boolean;
+  bonus:number;
+  constructor(isWin:number, isQualify:boolean, bonus:number){
+    this.isWin = isWin;
+    this.isQualify = isQualify;
+    this.bonus = bonus;
+
+  }
+}
