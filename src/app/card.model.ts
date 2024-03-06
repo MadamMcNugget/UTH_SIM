@@ -14,17 +14,18 @@ export class PlayerHandSim {
   }
   public ResolveBet(count:number, checkBetAmount:number, handResult:HandResult) {
     this.occurrence++;
-
+    // needs a fold option.
     let countIndex:number = this.resultsAtCount.findIndex((element)=> element.count == count);
     if (countIndex === -1) {
       this.resultsAtCount.push (new ResultAtCount(count))
       countIndex = this.resultsAtCount.length - 1
     }
     this.resultsAtCount[countIndex].UpdateResultAtCount(checkBetAmount, handResult)
+    if (checkBetAmount === 0){
 
+    }
 
-
-    if (handResult.isWin == 1){
+    else if (handResult.isWin == 1){
       this.totalCheckBet = this.totalCheckBet + checkBetAmount + 2;
       this.totalFourBet = this.totalFourBet + 4 + 2;
 
