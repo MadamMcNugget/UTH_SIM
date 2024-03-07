@@ -1,9 +1,15 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
+
 import { LiveAnnouncer} from '@angular/cdk/a11y';
 import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDividerModule } from '@angular/material/divider';
+
 import * as PokerEvaluator from 'poker-evaluator-ts';
-import { PlayerHandSim, Index, HandResult } from '../card.model'
+import { PlayerHandSim, Index, HandResult } from '../card.model';
 
 export interface PeriodicElement {
   name: string;
@@ -27,14 +33,43 @@ const ELEMENT_DATA: PeriodicElement[] = [
 @Component({
   selector: 'app-table',
   standalone: true,
-  imports: [ MatTableModule, MatSortModule ],
+  imports: [ MatTableModule, MatSortModule, MatCardModule, MatButtonModule, MatDividerModule, ReactiveFormsModule ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.css'
 })
 export class TableComponent {
+
+	// table example
 	displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = new MatTableDataSource(ELEMENT_DATA);
   constructor(private _liveAnnouncer: LiveAnnouncer) {}
+
+	// Parameters form
+	simParameters = new FormGroup({
+		playerCards: new FormGroup({
+			card1: new FormControl<string>( '' ),
+			card2: new FormControl<string>( '' )
+		}),
+		index: new FormGroup({
+			iA: new FormControl<number>( 0 ),
+			iK: new FormControl<number>( 0 ),
+			iQ: new FormControl<number>( 0 ),
+			iJ: new FormControl<number>( 0 ),
+			iT: new FormControl<number>( 0 ),
+			i9: new FormControl<number>( 0 ),
+			i8: new FormControl<number>( 0 ),
+			i7: new FormControl<number>( 0 ),
+			i6: new FormControl<number>( 0 ),
+			i5: new FormControl<number>( 0 ),
+			i4: new FormControl<number>( 0 ),
+			i3: new FormControl<number>( 0 ),
+			i2: new FormControl<number>( 0 )
+		}),
+		decision: new FormGroup({
+			d2: new FormControl<string>( '' ),
+			d3: new FormControl<string>( '' )
+		})
+	});
 
   @ViewChild(MatSort) sort: MatSort;
 
@@ -84,7 +119,7 @@ export class TableComponent {
     }
 
     catch(error){
-
+			console.log( 'some error happened', error );
     }
   }
 
@@ -96,7 +131,7 @@ export class TableComponent {
     // Furthermore, you can customize the message to add additional
     // details about the values being sorted.
     if (sortState.direction) {
-      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
+      this._liveAnnouncer.announce(`Sorted ${sortState.direction} ending`);
     } else {
       this._liveAnnouncer.announce('Sorting cleared');
     }
@@ -165,6 +200,9 @@ export class TableComponent {
     }
   }
 
-
+	simulate( ){
+		console.log( 'sim! ' );
+		console.log( this.simParameters.value );
+	}
 
 }

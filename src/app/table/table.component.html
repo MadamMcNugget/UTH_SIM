@@ -1,4 +1,24 @@
-<p>table works!</p>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Parameters</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+		<br>
+		<form [formGroup]="simParameters">
+			<h3>
+				Player Cards
+			</h3>
+			<ng-template formGroupName="playerCards">
+				<label>Card 1"</label>
+				<input formControlName="card1">
+			</ng-template>
+		</form>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-raised-button color="primary" (click)="simulate()">Execute</button>
+  </mat-card-actions>
+</mat-card>
+
 <table mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)"
        class="mat-elevation-z8">
 
