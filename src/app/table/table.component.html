@@ -1,4 +1,110 @@
-<p>table works!</p>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Parameters</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+
+		<form [formGroup]="simParametersForm">
+
+			<mat-card class="parameter-card" formGroupName="playerCards">
+				<mat-card-header>
+					<h3>Player Cards</h3>
+				</mat-card-header>
+				<mat-card-content>
+					<mat-form-field appearance="outline" class="parameter-input">
+						<mat-label>Card 1</mat-label>
+						<input matInput formControlName="card1">
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="parameter-input">
+						<mat-label>Card 2</mat-label>
+						<input matInput formControlName="card2">
+					</mat-form-field>
+				</mat-card-content>
+			</mat-card>
+			
+			<mat-card class="parameter-index-card" formGroupName="index">
+				<mat-card-header>
+					<h3>Index</h3>
+				</mat-card-header>
+				<mat-card-content>
+					<mat-form-field appearance="outline" class="parameter-index-input">
+						<mat-label>Ace</mat-label>
+						<input matInput formControlName="iA">
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="parameter-index-input">
+						<mat-label>King</mat-label>
+						<input matInput formControlName="iK">
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="parameter-index-input">
+						<mat-label>Queen</mat-label>
+						<input matInput formControlName="iQ">
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="parameter-index-input">
+						<mat-label>Jack</mat-label>
+						<input matInput formControlName="iJ">
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="parameter-index-input">
+						<mat-label>Ten</mat-label>
+						<input matInput formControlName="iT">
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="parameter-index-input">
+						<mat-label>9</mat-label>
+						<input matInput formControlName="i9">
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="parameter-index-input">
+						<mat-label>8</mat-label>
+						<input matInput formControlName="i8">
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="parameter-index-input">
+						<mat-label>7</mat-label>
+						<input matInput formControlName="i7">
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="parameter-index-input">
+						<mat-label>6</mat-label>
+						<input matInput formControlName="i6">
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="parameter-index-input">
+						<mat-label>5</mat-label>
+						<input matInput formControlName="i5">
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="parameter-index-input">
+						<mat-label>4</mat-label>
+						<input matInput formControlName="i4">
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="parameter-index-input">
+						<mat-label>3</mat-label>
+						<input matInput formControlName="i3">
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="parameter-index-input">
+						<mat-label>2</mat-label>
+						<input matInput formControlName="i2">
+					</mat-form-field>
+				</mat-card-content>
+			</mat-card>
+
+			<mat-card class="parameter-card" formGroupName="decision">
+				<mat-card-header>
+					<h3>Decision</h3>
+				</mat-card-header>
+				<mat-card-content>
+					<mat-form-field appearance="outline" class="parameter-input">
+						<mat-label>Decision 2</mat-label>
+						<input matInput formControlName="d2">
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="parameter-input">
+						<mat-label>Decision 3</mat-label>
+						<input matInput formControlName="d3">
+					</mat-form-field>
+				</mat-card-content>
+			</mat-card>
+
+		</form>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-raised-button color="primary" (click)="simulate()">Execute</button>
+  </mat-card-actions>
+</mat-card>
+
 <table mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)"
        class="mat-elevation-z8">
 
