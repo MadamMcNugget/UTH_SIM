@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
-import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { ReactiveFormsModule, FormGroup, FormControl, FormBuilder } from '@angular/forms';
 
 import { LiveAnnouncer} from '@angular/cdk/a11y';
 import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
@@ -7,6 +7,8 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 import { PlayerHandSim, Index, HandResult, PokerEvaluation } from '../card.model';
 import { PokerEvaluatorService } from '../poker-evaluator.service';
@@ -33,11 +35,11 @@ const ELEMENT_DATA: PeriodicElement[] = [
 @Component({
   selector: 'app-table',
   standalone: true,
-  imports: [ MatTableModule, MatSortModule, MatCardModule, MatButtonModule, MatDividerModule, ReactiveFormsModule ],
+  imports: [ MatTableModule, MatSortModule, MatCardModule, MatButtonModule, MatDividerModule, MatFormFieldModule, ReactiveFormsModule, MatInputModule ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.css'
 })
-export class TableComponent {
+export class TableComponent implements OnInit, AfterViewInit {
 
 	// table example
 	displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
@@ -48,40 +50,54 @@ export class TableComponent {
 	) {}
 
 	// Parameters form
-	simParameters = new FormGroup({
-		playerCards: new FormGroup({
-			card1: new FormControl<string>( '' ),
-			card2: new FormControl<string>( '' )
-		}),
-		index: new FormGroup({
-			iA: new FormControl<number>( 0 ),
-			iK: new FormControl<number>( 0 ),
-			iQ: new FormControl<number>( 0 ),
-			iJ: new FormControl<number>( 0 ),
-			iT: new FormControl<number>( 0 ),
-			i9: new FormControl<number>( 0 ),
-			i8: new FormControl<number>( 0 ),
-			i7: new FormControl<number>( 0 ),
-			i6: new FormControl<number>( 0 ),
-			i5: new FormControl<number>( 0 ),
-			i4: new FormControl<number>( 0 ),
-			i3: new FormControl<number>( 0 ),
-			i2: new FormControl<number>( 0 )
-		}),
-		decision: new FormGroup({
-			d2: new FormControl<string>( '' ),
-			d3: new FormControl<string>( '' )
-		})
-	});
+	simParametersForm:FormGroup = new FormGroup({});
 
   @ViewChild(MatSort) sort: MatSort;
 
-  async ngAfterViewInit() {
-    try{
+	ngOnInit() {
+		this.simParametersForm = new FormGroup({
+			playerCards: new FormGroup({
+				card1: new FormControl<string>( '' ),
+				card2: new FormControl<string>( '' )
+			}),
+			index: new FormGroup({
+				iA: new FormControl<number>( 0 ),
+				iK: new FormControl<number>( 0 ),
+				iQ: new FormControl<number>( 0 ),
+				iJ: new FormControl<number>( 0 ),
+				iT: new FormControl<number>( 0 ),
+				i9: new FormControl<number>( 0 ),
+				i8: new FormControl<number>( 0 ),
+				i7: new FormControl<number>( 0 ),
+				i6: new FormControl<number>( 0 ),
+				i5: new FormControl<number>( 0 ),
+				i4: new FormControl<number>( 0 ),
+				i3: new FormControl<number>( 0 ),
+				i2: new FormControl<number>( 0 )
+			}),
+			decision: new FormGroup({
+				d2: new FormControl<string>( '' ),
+				d3: new FormControl<string>( '' )
+			})
+		})
+	}
+
+  ngAfterViewInit() {
+		this.evaluate( );
+  }
+
+	async evaluate( playerCards?: string[], index?: number[] ){
+		try{
       this.dataSource.sort = this.sort;
       let deck:string[]=['As', 'Ah', 'Ac','Ad','Ks', 'Kh', 'Kc','Kd','Qs', 'Qh', 'Qc','Qd','Js', 'Jh', 'Jc','Jd', 'Ts', 'Th', 'Tc','Td','9s', '9h', '9c','9d','8s', '8h', '8c','8d','7s', '7h', '7c','7d','6s', '6h', '6c','6d','5s', '5h', '5c','5d','4s', '4h', '4c','4d','3s', '3h', '3c','3d','2s', '2h', '2c','2d'];
-      let index:number[]=[2,2,-6,1,1,-6,1,1,1,1,1,1,1];
-      let playerCards :string[] = ['Qs', '9h'];
+      
+			if( playerCards == undefined ){
+				playerCards = ['Qs', '9h'];
+			}
+			if( index == undefined ){
+				index = [2,2,-6,1,1,-6,1,1,1,1,1,1,1];
+			}
+
       let targetTotal :number = 5;
 
       let playerCardSim= new PlayerHandSim(playerCards, index);
@@ -122,7 +138,7 @@ export class TableComponent {
     catch(error){
 			console.log( 'some error happened', error );
     }
-  }
+	}
 
 
   /** Announce the change in sort state for assistive technology. */
@@ -204,10 +220,26 @@ export class TableComponent {
 
 	simulate( ){
 		console.log( 'sim! ' );
-		console.log( this.simParameters.value );
+		console.log( this.simParametersForm.value );
 
-		const hand:string[] = ['9s', 'Ts', 'Js', 'Qs', 'Ks'];
-		this.evaluateHand( hand );
+		const hand:string[] = [ this.simParametersForm.value.playerCards.card1, this.simParametersForm.value.playerCards.card2 ]
+		const index:number[] = [
+			this.simParametersForm.value.index.iA,
+			this.simParametersForm.value.index.iK,
+			this.simParametersForm.value.index.iQ,
+			this.simParametersForm.value.index.iJ,
+			this.simParametersForm.value.index.iT,
+			this.simParametersForm.value.index.i9,
+			this.simParametersForm.value.index.i8,
+			this.simParametersForm.value.index.i7,
+			this.simParametersForm.value.index.i6,
+			this.simParametersForm.value.index.i5,
+			this.simParametersForm.value.index.i4,
+			this.simParametersForm.value.index.i3,
+			this.simParametersForm.value.index.i2,
+		]
+
+		this.evaluate( hand, index );
 	}
 
 	async evaluateHand( hand:string[] ): Promise<PokerEvaluation> {
