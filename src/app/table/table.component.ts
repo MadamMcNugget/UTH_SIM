@@ -8,8 +8,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 
-import * as PokerEvaluator from 'poker-evaluator-ts';
-import { PlayerHandSim, Index, HandResult } from '../card.model';
+import { PlayerHandSim, Index, HandResult, PokerEvaluation } from '../card.model';
+import { PokerEvaluatorService } from '../poker-evaluator.service';
 
 export interface PeriodicElement {
   name: string;
@@ -42,7 +42,10 @@ export class TableComponent {
 	// table example
 	displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = new MatTableDataSource(ELEMENT_DATA);
-  constructor(private _liveAnnouncer: LiveAnnouncer) {}
+  constructor(
+		private _liveAnnouncer: LiveAnnouncer,
+		private pokerService: PokerEvaluatorService
+	) {}
 
 	// Parameters form
 	simParameters = new FormGroup({
@@ -73,15 +76,13 @@ export class TableComponent {
 
   @ViewChild(MatSort) sort: MatSort;
 
-  ngAfterViewInit() {
+  async ngAfterViewInit() {
     try{
       this.dataSource.sort = this.sort;
       let deck:string[]=['As', 'Ah', 'Ac','Ad','Ks', 'Kh', 'Kc','Kd','Qs', 'Qh', 'Qc','Qd','Js', 'Jh', 'Jc','Jd', 'Ts', 'Th', 'Tc','Td','9s', '9h', '9c','9d','8s', '8h', '8c','8d','7s', '7h', '7c','7d','6s', '6h', '6c','6d','5s', '5h', '5c','5d','4s', '4h', '4c','4d','3s', '3h', '3c','3d','2s', '2h', '2c','2d'];
       let index:number[]=[2,2,-6,1,1,-6,1,1,1,1,1,1,1];
       let playerCards :string[] = ['Qs', '9h'];
       let targetTotal :number = 5;
-
-
 
       let playerCardSim= new PlayerHandSim(playerCards, index);
       let workingDeck:string[]= deck.filter((card)=> card !== playerCardSim.cards[0] && card!==playerCardSim.cards[1] );
@@ -100,7 +101,7 @@ export class TableComponent {
 
         //console.log(PokerEvaluator.evalHand(testhand));
 
-        let handResult= this.Eval_UTH(playerCardSim.cards, dealerCards,flop,river);
+        let handResult= await this.Eval_UTH(playerCardSim.cards, dealerCards,flop,river);
 
         let checkBetAmount:number = this.EvalCheckBetAmount(playerCardSim.cards, flop, river);
 
@@ -153,14 +154,14 @@ export class TableComponent {
     return count
   }
 
-  Eval_UTH (playerCards:string[], dealerCards:string[], flop:string[], river:string[]){
+  async Eval_UTH (playerCards:string[], dealerCards:string[], flop:string[], river:string[]){
     console.log('player cards are ' + playerCards );
     console.log('dealer cards are ' + dealerCards );
     console.log('board cards are ' + flop.concat(river) );
 
-    let playerHand = PokerEvaluator.evalHand(playerCards.concat(flop, river));
+    let playerHand:PokerEvaluation = await this.evaluateHand(playerCards.concat(flop, river));
 
-    let dealerHand = PokerEvaluator.evalHand(dealerCards.concat(flop, river));
+    let dealerHand:PokerEvaluation = await this.evaluateHand(dealerCards.concat(flop, river));
 
     let isWin:number = 0;
     let bonus:number = 0;
@@ -188,7 +189,8 @@ export class TableComponent {
 
     return handResult;
   }
-  EvalCheckBetAmount(playerCards:string[], flop:string[], river:string[]){
+
+	EvalCheckBetAmount(playerCards:string[], flop:string[], river:string[]){
     if (flop.find((element) => element.includes(playerCards[0].substring(0,1)))||flop.find((element) => element.includes(playerCards[1].substring(0,1)))){
       return 2;
     }
@@ -203,6 +205,28 @@ export class TableComponent {
 	simulate( ){
 		console.log( 'sim! ' );
 		console.log( this.simParameters.value );
+
+		const hand:string[] = ['9s', 'Ts', 'Js', 'Qs', 'Ks'];
+		this.evaluateHand( hand );
 	}
 
+	async evaluateHand( hand:string[] ): Promise<PokerEvaluation> {
+
+		let evaluation: PokerEvaluation = new PokerEvaluation();
+		await new Promise<void>( (resolve, reject) => { this.pokerService.evaluateHand(hand).subscribe( {
+			next: newPokerEvaluation => {
+				console.log( "evaluation return: ", newPokerEvaluation );
+				evaluation = newPokerEvaluation;
+			},
+			error: error => {
+				console.log( "evaluation error: ", error );
+				reject(error);
+			},
+			complete: () => {
+				resolve();
+			}
+		})});
+
+		return evaluation;
+	}
 }
