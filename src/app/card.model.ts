@@ -1,6 +1,8 @@
 export class PlayerHandSim {
   cards: string[];
   index: Index;
+  decision2:number=0;
+  decision3:number=0;
   resultsAtCount: ResultAtCount[] = [];
   totalCheckBet: number= 0;
   totalCheckNet: number= 0;

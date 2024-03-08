@@ -44,6 +44,8 @@ export class TableComponent {
       let deck:string[]=['As', 'Ah', 'Ac','Ad','Ks', 'Kh', 'Kc','Kd','Qs', 'Qh', 'Qc','Qd','Js', 'Jh', 'Jc','Jd', 'Ts', 'Th', 'Tc','Td','9s', '9h', '9c','9d','8s', '8h', '8c','8d','7s', '7h', '7c','7d','6s', '6h', '6c','6d','5s', '5h', '5c','5d','4s', '4h', '4c','4d','3s', '3h', '3c','3d','2s', '2h', '2c','2d'];
       let index:number[]=[2,2,-6,1,1,-6,1,1,1,1,1,1,1];
       let playerCards :string[] = ['Qs', '9h'];
+      let decision2 = 11050;
+      //let decision3 =
       let playerCardSim= new PlayerHandSim(playerCards, index);
 
       let workingDeck:string[]= deck.filter((card)=> card !== playerCardSim.cards[0] && card!==playerCardSim.cards[1] );
@@ -60,9 +62,9 @@ export class TableComponent {
       console.log(deadCards);
 
       let count:number= CountDeadCards(deadCards,playerCardSim.index);
-      //let testhand:string[]= ['Th','Jh','Qh','Kh','Ah'];
+      let testhand:string[]= ['Ah','AS','Qh','9s','Kd'];
 
-      //console.log(PokerEvaluator.evalHand(testhand));
+      console.log(PokerEvaluator.evalHand(testhand));
 
       let handResult= Eval_UTH(playerCardSim.cards, dealerCards,flop,river);
 
