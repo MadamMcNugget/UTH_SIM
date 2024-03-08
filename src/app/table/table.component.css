@@ -5,3 +5,23 @@ table {
 th.mat-sort-header-sorted {
   color: black;
 }
+
+.parameter-card {
+	width: 200px;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.parameter-input {
+	width: 100%;
+}
+
+.parameter-index-card {
+	width: 500px;
+	display: inline-block;
+}
+
+.parameter-index-input {
+	width: 100px;
+	padding-right: 1em;
+}
