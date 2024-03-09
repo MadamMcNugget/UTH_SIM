@@ -1,0 +1,51 @@
+<mat-accordion>
+	<mat-expansion-panel>
+		<mat-expansion-panel-header>
+			<mat-panel-title>
+				Utility
+			</mat-panel-title>
+		</mat-expansion-panel-header>
+		<h3>Hand Evaluator</h3>
+		<p>Please enter 3, 5, 6 or 7 cards</p>
+		<form [formGroup]="handEvaluatorForm" (submit)="evaluateHand( )">
+			<mat-form-field appearance="outline" class="card-input">
+				<mat-label>Card 1</mat-label>
+				<input matInput maxLength="2" formControlName="card1">
+			</mat-form-field>
+			<mat-form-field appearance="outline" class="card-input">
+				<mat-label>Card 2</mat-label>
+				<input matInput maxLength="2" formControlName="card2">
+			</mat-form-field>
+			<mat-form-field appearance="outline" class="card-input">
+				<mat-label>Card 3</mat-label>
+				<input matInput maxLength="2" formControlName="card3">
+			</mat-form-field>
+			<mat-form-field appearance="outline" class="card-input">
+				<mat-label>Card 4</mat-label>
+				<input matInput maxLength="2" formControlName="card4">
+			</mat-form-field>
+			<mat-form-field appearance="outline" class="card-input">
+				<mat-label>Card 5</mat-label>
+				<input matInput maxLength="2" formControlName="card5">
+			</mat-form-field>
+			<mat-form-field appearance="outline" class="card-input">
+				<mat-label>Card 6</mat-label>
+				<input matInput maxLength="2" formControlName="card6">
+			</mat-form-field>
+			<mat-form-field appearance="outline" class="card-input">
+				<mat-label>Card 7</mat-label>
+				<input matInput maxLength="2" formControlName="card7">
+			</mat-form-field>
+			<button mat-raised-button color="primary">Evaluate</button>
+			<mat-error *ngIf="handErrors.length > 0">
+				<p *ngFor="let error of handErrors">
+					{{ error }}
+				</p>
+			</mat-error>
+		</form>
+		<p>
+			Result: <span *ngIf="evaluationResult != null">{{ evaluationResult | json }}</span>
+		</p>
+	</mat-expansion-panel>
+</mat-accordion>
+<br>
