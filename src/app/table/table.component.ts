@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { ReactiveFormsModule, FormGroup, FormControl, FormBuilder } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 
 import { LiveAnnouncer} from '@angular/cdk/a11y';
 import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import { PlayerHandSim, Index, HandResult, PokerEvaluation } from '../card.model';
 import { PokerEvaluatorService } from '../poker-evaluator.service';
+import { UtilityComponent } from '../utility/utility.component';
 
 export interface PeriodicElement {
   name: string;
@@ -35,7 +36,7 @@ const ELEMENT_DATA: PeriodicElement[] = [
 @Component({
   selector: 'app-table',
   standalone: true,
-  imports: [ MatTableModule, MatSortModule, MatCardModule, MatButtonModule, MatDividerModule, MatFormFieldModule, ReactiveFormsModule, MatInputModule ],
+  imports: [ MatTableModule, MatSortModule, MatCardModule, MatButtonModule, MatDividerModule, MatFormFieldModule, ReactiveFormsModule, MatInputModule, UtilityComponent ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.css'
 })
