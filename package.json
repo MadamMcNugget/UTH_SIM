@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:gambler": "node dist/gambler/server/server.mjs",
-    "start:server": "nodemon ./backend/server.js"
+    "start:server": "nodemon ./backend/server.js",
+		"tsc:watch": "npx tsc-watch --project ./backend"
   },
   "private": true,
   "dependencies": {

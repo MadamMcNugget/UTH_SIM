@@ -1,8 +1,8 @@
 const PokerEvaluator = require("poker-evaluator");
 
-exports.evalHand = (req,res,next) => {
+exports.evalHand = (req:any,res:any,next:any) => {
 
-	console.log( "Welcome to the Poker Evaluator");
+	console.log( "Welcome to the Poker Evaluator!");
 
 	let testHand = ['Th','Jh','Qh','Kh', 'Ah'];
 	let cards = req.body;
