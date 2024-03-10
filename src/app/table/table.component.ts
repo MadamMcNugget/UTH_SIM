@@ -10,7 +10,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
-import { PlayerHandSim, Index, HandResult, PokerEvaluation } from '../card.model';
+import { PlayerHandSim, Index, HandResult, PokerEvaluation, decision } from '../card.model';
 import { PokerEvaluatorService } from '../poker-evaluator.service';
 import { UtilityComponent } from '../utility/utility.component';
 
@@ -91,7 +91,7 @@ export class TableComponent implements OnInit, AfterViewInit {
 		try{
       this.dataSource.sort = this.sort;
       let deck:string[]=['As', 'Ah', 'Ac','Ad','Ks', 'Kh', 'Kc','Kd','Qs', 'Qh', 'Qc','Qd','Js', 'Jh', 'Jc','Jd', 'Ts', 'Th', 'Tc','Td','9s', '9h', '9c','9d','8s', '8h', '8c','8d','7s', '7h', '7c','7d','6s', '6h', '6c','6d','5s', '5h', '5c','5d','4s', '4h', '4c','4d','3s', '3h', '3c','3d','2s', '2h', '2c','2d'];
-      
+
 			if( playerCards == undefined ){
 				playerCards = ['Qs', '9h'];
 			}
@@ -101,7 +101,11 @@ export class TableComponent implements OnInit, AfterViewInit {
 
       let targetTotal :number = 5;
 
-      let playerCardSim= new PlayerHandSim(playerCards, index);
+      let decision2:decision[] = [];
+      let decision3:decision[] = [];
+
+
+      let playerCardSim= new PlayerHandSim(playerCards, index, decision2, decision3);
       let workingDeck:string[]= deck.filter((card)=> card !== playerCardSim.cards[0] && card!==playerCardSim.cards[1] );
 
       for (let i=0; i<=targetTotal; i++){
@@ -120,9 +124,7 @@ export class TableComponent implements OnInit, AfterViewInit {
 
         let handResult= await this.Eval_UTH(playerCardSim.cards, dealerCards,flop,river);
 
-        let checkBetAmount:number = this.EvalCheckBetAmount(playerCardSim.cards, flop, river);
-
-
+        let checkBetAmount:number = this.EvalCheckBetAmount(playerCardSim.cards, flop, river, decision2, decision3);
 
         playerCardSim.ResolveBet(count, checkBetAmount, handResult);
       }
@@ -207,13 +209,24 @@ export class TableComponent implements OnInit, AfterViewInit {
     return handResult;
   }
 
-	EvalCheckBetAmount(playerCards:string[], flop:string[], river:string[]){
+	EvalCheckBetAmount(playerCards:string[], flop:string[], river:string[], decision2:decision[], decision3:decision[]){
+    // evaluate flop
+    // evaluate river
     if (flop.find((element) => element.includes(playerCards[0].substring(0,1)))||flop.find((element) => element.includes(playerCards[1].substring(0,1)))){
       return 2;
     }
-    else if(river.find((element) => element.includes(playerCards[0].substring(0,1)))||river.find((element) => element.includes(playerCards[1].substring(0,1)))){
+    // decision2.forEach(element => {
+    //   if (element.handtype === flop.handtype && flop.value >= element.value){return 2;}
+    // });
+
+
+    if(river.find((element) => element.includes(playerCards[0].substring(0,1)))||river.find((element) => element.includes(playerCards[1].substring(0,1)))){
       return 1;
     }
+    // decision3.forEach(element => {
+    //   if (element.handtype === flop.handtype && flop.value >= element.value){return 1;}
+    // });
+
     else{
       return 0;
     }
