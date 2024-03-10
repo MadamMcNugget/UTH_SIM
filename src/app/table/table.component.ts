@@ -10,7 +10,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
-import { PlayerHandSim, Index, HandResult, PokerEvaluation } from '../card.model';
+import { PlayerHandSim, Index, HandResult, PokerEvaluation, decision } from '../card.model';
 import { PokerEvaluatorService } from '../poker-evaluator.service';
 
 export interface PeriodicElement {
@@ -100,7 +100,11 @@ export class TableComponent implements OnInit, AfterViewInit {
 
       let targetTotal :number = 5;
 
-      let playerCardSim= new PlayerHandSim(playerCards, index);
+      let decision2:decision[] = [];
+      let decision3:decision[] = [];
+
+
+      let playerCardSim= new PlayerHandSim(playerCards, index, decision2, decision3);
       let workingDeck:string[]= deck.filter((card)=> card !== playerCardSim.cards[0] && card!==playerCardSim.cards[1] );
 
       for (let i=0; i<=targetTotal; i++){
@@ -119,9 +123,7 @@ export class TableComponent implements OnInit, AfterViewInit {
 
         let handResult= await this.Eval_UTH(playerCardSim.cards, dealerCards,flop,river);
 
-        let checkBetAmount:number = this.EvalCheckBetAmount(playerCardSim.cards, flop, river);
-
-
+        let checkBetAmount:number = this.EvalCheckBetAmount(playerCardSim.cards, flop, river, decision2, decision3);
 
         playerCardSim.ResolveBet(count, checkBetAmount, handResult);
       }
@@ -206,13 +208,24 @@ export class TableComponent implements OnInit, AfterViewInit {
     return handResult;
   }
 
-	EvalCheckBetAmount(playerCards:string[], flop:string[], river:string[]){
+	EvalCheckBetAmount(playerCards:string[], flop:string[], river:string[], decision2:decision[], decision3:decision[]){
+    // evaluate flop
+    // evaluate river
     if (flop.find((element) => element.includes(playerCards[0].substring(0,1)))||flop.find((element) => element.includes(playerCards[1].substring(0,1)))){
       return 2;
     }
-    else if(river.find((element) => element.includes(playerCards[0].substring(0,1)))||river.find((element) => element.includes(playerCards[1].substring(0,1)))){
+    // decision2.forEach(element => {
+    //   if (element.handtype === flop.handtype && flop.value >= element.value){return 2;}
+    // });
+
+
+    if(river.find((element) => element.includes(playerCards[0].substring(0,1)))||river.find((element) => element.includes(playerCards[1].substring(0,1)))){
       return 1;
     }
+    // decision3.forEach(element => {
+    //   if (element.handtype === flop.handtype && flop.value >= element.value){return 1;}
+    // });
+
     else{
       return 0;
     }

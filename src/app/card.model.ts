@@ -1,18 +1,19 @@
 export class PlayerHandSim {
   cards: string[];
   index: Index;
-  decision2:number=0;
-  decision3:number=0;
+  decision2:decision[]=[];
+  decision3:decision[]=[];
   resultsAtCount: ResultAtCount[] = [];
   totalCheckBet: number= 0;
   totalCheckNet: number= 0;
   totalFourBet:number= 0;
   totalFourNet:number= 0;
   occurrence:number = 0;
-  constructor(cards:string[], index:number[]){
+  constructor(cards:string[], index:number[], decision2:decision[], decision3:decision[]){
     this.cards= cards;
-
     this.index= new Index(index);
+    this.decision2 = decision2;
+    this.decision3 = decision3;
   }
   public ResolveBet(count:number, checkBetAmount:number, handResult:HandResult) {
     this.occurrence++;
@@ -132,7 +133,6 @@ export class ResultAtCount{
   }
 }
 
-
 export class HandResult{
   isWin:number;
   isQualify:boolean;
@@ -152,4 +152,9 @@ export class PokerEvaluation{
 	handName: string;
 	constructor( ){
 	}
+}
+
+export class decision{
+  handtype: number;
+  value: number;
 }
