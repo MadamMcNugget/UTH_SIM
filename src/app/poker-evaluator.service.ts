@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { environment } from './../environments/environment';
-import { PokerEvaluation } from './card.model';
+import { PlayerHandSim, PokerEvaluation } from './card.model';
 
 const BACKEND_URL = environment.apiUrl + '/poker/';
 
@@ -21,6 +21,17 @@ export class PokerEvaluatorService {
 		return this.http.post<PokerEvaluation>( BACKEND_URL, hand );
 	}
 
+	simulateRound( hand: string[], index: number[] ){
+		const data ={
+			hand: hand,
+			index: index
+		}
+		console.log( 'poker-evaluator.service - evaluateRound( )' );
+		return this.http.post<PlayerHandSim>( BACKEND_URL + 'simulateRound', data );
+	}
+
+	//------------------------------------------------------------------------
+	// helper functions
 	validateCard( card: string ): string | null {
 		let errorMsg = null;
 		console.log('validating card: ' + card);
