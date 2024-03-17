@@ -17,44 +17,59 @@ export class PlayerHandSim {
   }
   public ResolveBet(count:number, checkBetAmount:number, handResult:HandResult) {
     this.occurrence++;
-    // needs a fold option.
+
     let countIndex:number = this.resultsAtCount.findIndex((element)=> element.count == count);
     if (countIndex === -1) {
       this.resultsAtCount.push (new ResultAtCount(count))
       countIndex = this.resultsAtCount.length - 1
     }
     this.resultsAtCount[countIndex].UpdateResultAtCount(checkBetAmount, handResult)
+
     if (checkBetAmount === 0){
-
+      this.totalCheckBet = this.totalCheckBet + 2;
+      this.totalCheckNet = this.totalCheckNet - 2;
     }
-
     else if (handResult.isWin == 1){
       this.totalCheckBet = this.totalCheckBet + checkBetAmount + 2;
-      this.totalFourBet = this.totalFourBet + 4 + 2;
-
       this.totalCheckNet = this.totalCheckNet + checkBetAmount + handResult.bonus;
-      this.totalFourNet = this.totalFourNet + 4 + handResult.bonus;
 
       if (handResult.isQualify){
         this.totalCheckNet++
-        this.totalFourNet++
+
       }
     }
     else if (handResult.isWin == -1){
       this.totalCheckBet = this.totalCheckBet + checkBetAmount + 2;
-      this.totalFourBet = this.totalFourBet + 4 + 2;
-
       this.totalCheckNet = this.totalCheckNet - checkBetAmount -1;
+      if (handResult.isQualify){
+        this.totalCheckNet--
+      }
+    }
+    else if (handResult.isWin ==0){
+      this.totalCheckBet = this.totalCheckBet + checkBetAmount + 2;
+    }
+    else{
+      throw Error;
+    }
+
+    if (handResult.isWin == 1){
+      this.totalFourBet = this.totalFourBet + 4 + 2;
+      this.totalFourNet = this.totalFourNet + 4 + handResult.bonus;
+
+      if (handResult.isQualify){
+        this.totalFourNet++
+      }
+    }
+    else if (handResult.isWin == -1){
+      this.totalFourBet = this.totalFourBet + 4 + 2;
       this.totalFourNet = this.totalFourNet - 4  -1;
 
       if (handResult.isQualify){
-        this.totalCheckNet--
         this.totalFourNet--
       }
 
     }
     else if (handResult.isWin ==0){
-      this.totalCheckBet = this.totalCheckBet + checkBetAmount + 2;
       this.totalFourBet = this.totalFourBet + 4 + 2;
     }
     else{
@@ -104,31 +119,45 @@ export class ResultAtCount{
     this.occurrence++
 
     if (handResult.isWin == 1){
-      this.checkNet = this.checkNet + checkBetAmount + handResult.bonus;
-      this.checkBet = this.checkBet + checkBetAmount + 2;
-
       this.fourNet = this.fourNet + 4 + handResult.bonus;
       this.fourBet = this.fourBet + 4 + 2;
       if (handResult.isQualify){
-        this.checkNet++
         this.fourNet++
       }
     }
     else if (handResult.isWin == -1){
-      this.checkBet = this.checkBet + checkBetAmount + 2;
       this.fourBet = this.fourBet + 4 + 2;
-
-      this.checkNet = this.checkNet - checkBetAmount -1;
-      this.fourNet = this.fourNet - 4  -1;
+      this.fourNet = this.fourNet - 4 - 1;
 
       if (handResult.isQualify){
-        this.checkNet--
         this.fourNet--
       }
     }
     else if (handResult.isWin ==0){
-      this.checkBet = this.checkBet + checkBetAmount + 2;
       this.fourBet = this.fourBet + 4 + 2;
+    }
+
+    if (checkBetAmount == 0){
+      this.checkNet = this.checkNet - 2;
+      this.checkBet = this.checkBet + 2;
+    }
+    else if (handResult.isWin == 1){
+      this.checkNet = this.checkNet + checkBetAmount + handResult.bonus;
+      this.checkBet = this.checkBet + checkBetAmount + 2;
+      if (handResult.isQualify){
+        this.checkNet++
+      }
+    }
+    else if (handResult.isWin == -1){
+      this.checkBet = this.checkBet + checkBetAmount + 2;
+      this.checkNet = this.checkNet - checkBetAmount -1;
+
+      if (handResult.isQualify){
+        this.checkNet--
+      }
+    }
+    else if (handResult.isWin ==0){
+      this.checkBet = this.checkBet + checkBetAmount + 2;
     }
   }
 }
@@ -137,10 +166,14 @@ export class HandResult{
   isWin:number;
   isQualify:boolean;
   bonus:number;
-  constructor(isWin:number, isQualify:boolean, bonus:number){
+  playerFinalResult:PokerEvaluation;
+  playerFlopResult:PokerEvaluation;
+  constructor(isWin:number, isQualify:boolean, bonus:number, playerFinalResult:PokerEvaluation, playerFlopResult:PokerEvaluation){
     this.isWin = isWin;
     this.isQualify = isQualify;
     this.bonus = bonus;
+    this.playerFinalResult = playerFinalResult;
+    this.playerFlopResult = playerFlopResult;
 
   }
 }
@@ -150,8 +183,7 @@ export class PokerEvaluation{
 	handRank: number;
 	value: number;
 	handName: string;
-	constructor( ){
-	}
+
 }
 
 export class Decision{
