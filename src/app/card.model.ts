@@ -137,10 +137,14 @@ export class HandResult{
   isWin:number;
   isQualify:boolean;
   bonus:number;
-  constructor(isWin:number, isQualify:boolean, bonus:number){
+  playerFinalValue:number;
+  playerFlopValue:number;
+  constructor(isWin:number, isQualify:boolean, bonus:number, playerFinalValue:number, playerFlopValue:number){
     this.isWin = isWin;
     this.isQualify = isQualify;
     this.bonus = bonus;
+    this.playerFinalValue = playerFinalValue;
+    this.playerFlopValue = playerFlopValue;
 
   }
 }
