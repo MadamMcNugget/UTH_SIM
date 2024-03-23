@@ -7,8 +7,13 @@ const bodyParser = require( 'body-parser' );
 const pokerRoutes = require( "./routes/poker" );
 const app = expresss();
 
-console.log( "backend starts!" );
+// socket.io things
+const httpServer = require( 'http' ).createServer( app );
+const { Server } = require( 'socket.io' );
+const io = require( 'socket.io' )( httpServer )
 
+
+console.log( "backend starts!" );
 // mongoose.connect("mongodb+srv://daza:" + process.env.MONGO_ATLAS_PW + "@cluster0.dzhrvu7.mongodb.net/Cluster0?retryWrites=true&w=majority", { useNewUrlParser: true })
 // 	.then( () => {
 // 		console.log("Connected to database!");
@@ -52,10 +57,27 @@ function ignoreFavicon( req: any, res: any, next: any ) {  // browser will try t
 	}
 }
 
+
+io.on( 'connection', ( socket: any ) => {
+	console.log( 'a user connected' );
+
+	// socket.on( 'message', ( message: string ) => {
+	// 	console.log( 'message received: ', message );
+	// } )
+
+	// socket.on( 'disconnect', () => {
+	// 	console.log( 'user disconnected' );
+	// } )
+} );
+
 app.use( "/api/poker", pokerRoutes );
 
-app.use( ( req: any, res: any, next: any ) => {
-	res.sendFile( path.join( __dirname, "angular", "index.html" ) );
-} )
+// app.use( ( req: any, res: any, next: any ) => {
+// 	res.sendFile( path.join( __dirname, "angular", "index.html" ) );
+// } )
+
+
+
+
 
 module.exports = app;

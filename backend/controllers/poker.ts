@@ -13,6 +13,7 @@ exports.evaluateOneHand = ( req: any, res: any, next: any ) => {
 	try {
 		const evaluation: PokerEvaluation = PokerEvaluator.evalHand( cards );
 		console.log( "result: ", evaluation );
+
 		res.status( 200 ).json( evaluation );
 	} catch ( error ) {
 		console.log( "evaluation failed!", error );
@@ -21,24 +22,34 @@ exports.evaluateOneHand = ( req: any, res: any, next: any ) => {
 }
 
 exports.simulateOneRound = ( req: any, res: any, next: any ) => {
+	console.log('---------------------------------------------------------');
 	console.log( "\nPoker controller - simulateOneRound()" );
 
 	const deck: string[] = [ 'As', 'Ah', 'Ac', 'Ad', 'Ks', 'Kh', 'Kc', 'Kd', 'Qs', 'Qh', 'Qc', 'Qd', 'Js', 'Jh', 'Jc', 'Jd', 'Ts', 'Th', 'Tc', 'Td', '9s', '9h', '9c', '9d', '8s', '8h', '8c', '8d', '7s', '7h', '7c', '7d', '6s', '6h', '6c', '6d', '5s', '5h', '5c', '5d', '4s', '4h', '4c', '4d', '3s', '3h', '3c', '3d', '2s', '2h', '2c', '2d' ];
 	const playerCards: string[] = req.body.hand;
 	const index: number[] = req.body.index;
-	const decision2: Decision[] = [ { handtype: 2, value: 10756 }, {handtype:4, value:16427} ];	// temp
-	const decision3: Decision[] = [ { handtype: 1, value: 4869 }, {handtype:2, value:1}, {handtype:3, value:12297}, {handtype:4, value:16956}];	// temp
+	// const decision2: Decision[] = [ { handtype: 2, value: 10756 }, {handtype:4, value:16427} ];	// temp
+	// const decision3: Decision[] = [ { handtype: 1, value: 4869 }, {handtype:2, value:1}, {handtype:3, value:12297}, {handtype:4, value:16956}];	// temp
+	const decision2: Decision[] = req.body.decision2;
+	const decision3: Decision[] = req.body.decision3;
+	const runCount: number = req.body.runCount;
 
-
-	console.log( 'playerCards: ', playerCards );
+	console.log( '\nplayerCards: ', playerCards );
 	console.log( 'index: ', index );
+	console.log( 'decision2', decision2 );
+	console.log( 'decision3', decision3 );
+	console.log( 'runCount: ', runCount);
+	console.log( '\n-----------------------')
 
 	let targetTotal: number = 0;
 
 	let playerCardSim = new PlayerHandSim( playerCards, index, decision2, decision3 );
 	let workingDeck: string[] = deck.filter( ( card ) => card !== playerCardSim.cards[ 0 ] && card !== playerCardSim.cards[ 1 ] );
+	let currentCount: number = 1;
 
-	for ( let i = 0; i <= targetTotal; i++ ) {
+	while ( currentCount <= runCount ) {
+
+		console.log( '\nRunning sim #: ' + currentCount );
 		ShuffleArray( workingDeck );
 
 		let flop: string[] = workingDeck.slice( 0, 3 );
@@ -54,13 +65,25 @@ exports.simulateOneRound = ( req: any, res: any, next: any ) => {
 		let checkBetAmount: number = EvalCheckBetAmount( playerCardSim.cards, flop, river,handResult, decision2, decision3 );
     console.log ('checkBetAmount ' + checkBetAmount);
 		playerCardSim.ResolveBet( count, checkBetAmount, handResult );
+
+		// send progress to frontend
+		// res.writeHead( 200, {
+		// 	'Content-Type': "text/event-stream",
+		// 	'Cache-Control': "no-cache",
+		// 	'Connection': "keep-alive"
+		// });
+
+		currentCount++;
+		console.log( '\n-----------------------');
 	}
 
 	//console.log("index for card1 is " + playerCard.index.indexMap.get((playerCard.cards[0].substring(0,1))));
 	// console.log("UnShuffled card is " + workingDeck);
 
 
+	console.log( "\n*** Resulting playerCardSim ***" );
 	console.log( playerCardSim );
+	console.log( "\n*** Resulting playerCardSim end ***\n" );
 
 	res.status( 200 ).json( { message: "ok!", playerCardSim: playerCardSim } );
 

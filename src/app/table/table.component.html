@@ -1,13 +1,14 @@
 <app-utility></app-utility>
 
 <mat-card>
-  <mat-card-header>
-    <mat-card-title>Parameters</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
+	<mat-card-header>
+		<mat-card-title>Parameters</mat-card-title>
+	</mat-card-header>
+	<mat-card-content>
 
 		<form [formGroup]="simParametersForm">
 
+			<!-- Player Cards -->
 			<mat-card class="parameter-card" formGroupName="playerCards">
 				<mat-card-header>
 					<h3>Player Cards</h3>
@@ -23,7 +24,8 @@
 					</mat-form-field>
 				</mat-card-content>
 			</mat-card>
-			
+
+			<!-- Indexes -->
 			<mat-card class="parameter-index-card" formGroupName="index">
 				<mat-card-header>
 					<h3>Index</h3>
@@ -84,64 +86,123 @@
 				</mat-card-content>
 			</mat-card>
 
-			<mat-card class="parameter-card" formGroupName="decision">
+			<!-- Decisions -->
+			<mat-card class="parameter-decision-card" formGroupName="decision">
 				<mat-card-header>
-					<h3>Decision</h3>
+					<h3>Decisions</h3>
 				</mat-card-header>
 				<mat-card-content>
-					<mat-form-field appearance="outline" class="parameter-input">
-						<mat-label>Decision 2</mat-label>
-						<input matInput formControlName="d2">
-					</mat-form-field>
-					<mat-form-field appearance="outline" class="parameter-input">
-						<mat-label>Decision 3</mat-label>
-						<input matInput formControlName="d3">
+
+					<!-- Decision 2 -->
+					<ng-container formArrayName="d2">
+						<h3>Decision 2 &nbsp;
+							<button mat-icon-button (click)="addDecisionPoint( 2 )"><mat-icon>add</mat-icon></button>
+						</h3>
+						<ng-container *ngFor="let decision of getDecision2Controls( ); let i = index">
+							<ng-container [formGroupName]="i">
+								<mat-form-field appearance="outline" class="parameter-decision-input">
+									<mat-label>Hand Type</mat-label>
+									<input matInput formControlName="handType">
+								</mat-form-field>
+								<mat-form-field appearance="outline" class="parameter-decision-input">
+									<mat-label>Value</mat-label>
+									<input matInput formControlName="value">
+								</mat-form-field>
+							</ng-container>
+							<button mat-icon-button color="warn" (click)="removeDecisionPoint( 2, i )">
+								<mat-icon>cancel</mat-icon>
+							</button>
+						</ng-container>
+					</ng-container>
+					@if( getDecision2Controls().length == 0 ){
+					<button mat-button (click)="addDecisionPoint(2)">Add decision</button>
+					}
+
+					<!-- Decision 3 -->
+					<ng-container formGroupName="d3">
+						<h3>Decision 3 &nbsp;
+							<button mat-icon-button (click)="addDecisionPoint( 3 )"><mat-icon>add</mat-icon></button>
+						</h3>
+						<ng-container *ngFor="let decision of getDecision3Controls( ); let i = index">
+							<ng-container [formGroupName]="i">
+								<mat-form-field appearance="outline" class="parameter-decision-input">
+									<mat-label>Hand Type</mat-label>
+									<input matInput formControlName="handType">
+								</mat-form-field>
+								<mat-form-field appearance="outline" class="parameter-decision-input">
+									<mat-label>Value</mat-label>
+									<input matInput formControlName="value">
+								</mat-form-field>
+							</ng-container>
+							<button mat-icon-button color="warn" (click)="removeDecisionPoint( 3, i )">
+								<mat-icon>cancel</mat-icon>
+							</button>
+						</ng-container>
+					</ng-container>
+					@if( getDecision3Controls().length == 0 ){
+					<button mat-button (click)="addDecisionPoint(3)">Add decision</button>
+					}
+
+				</mat-card-content>
+			</mat-card>
+			
+			<!-- Times to run the simulation -->
+			<mat-card class="parameter-runcount-card">
+				<mat-card-header>
+					<h3>Run Count</h3>
+				</mat-card-header>
+				<mat-card-content>
+					<mat-form-field appearance="outline" class="parameter-decision-input">
+						<mat-label>Run Count</mat-label>
+						<input matInput formControlName="runCount">
 					</mat-form-field>
 				</mat-card-content>
 			</mat-card>
-
 		</form>
-  </mat-card-content>
-  <mat-card-actions>
-    <button mat-raised-button color="primary" (click)="simulate()">Execute</button>
-  </mat-card-actions>
+	</mat-card-content>
+	<mat-card-actions>
+		<button mat-raised-button color="primary" (click)="simulate()">Execute</button>
+	</mat-card-actions>
 </mat-card>
 
+<!-- 
+Results Table	
+-->
 <table mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)"
-       class="mat-elevation-z8">
+	class="mat-elevation-z8">
 
-  <!-- Position Column -->
-  <ng-container matColumnDef="position">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number">
-      Player Cards
-    </th>
-    <td mat-cell *matCellDef="let element"> {{element.position}} </td>
-  </ng-container>
+	<!-- Position Column -->
+	<ng-container matColumnDef="position">
+		<th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number">
+			Player Cards
+		</th>
+		<td mat-cell *matCellDef="let element"> {{element.position}} </td>
+	</ng-container>
 
-  <!-- Name Column -->
-  <ng-container matColumnDef="name">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by name">
-      Starting Count
-    </th>
-    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-  </ng-container>
+	<!-- Name Column -->
+	<ng-container matColumnDef="name">
+		<th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by name">
+			Starting Count
+		</th>
+		<td mat-cell *matCellDef="let element"> {{element.name}} </td>
+	</ng-container>
 
-  <!-- Weight Column -->
-  <ng-container matColumnDef="weight">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by weight">
-      Dead Cards
-    </th>
-    <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
-  </ng-container>
+	<!-- Weight Column -->
+	<ng-container matColumnDef="weight">
+		<th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by weight">
+			Dead Cards
+		</th>
+		<td mat-cell *matCellDef="let element"> {{element.weight}} </td>
+	</ng-container>
 
-  <!-- Symbol Column -->
-  <ng-container matColumnDef="symbol">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by symbol">
-      Count
-    </th>
-    <td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
-  </ng-container>
+	<!-- Symbol Column -->
+	<ng-container matColumnDef="symbol">
+		<th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by symbol">
+			Count
+		</th>
+		<td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
+	</ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+	<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+	<tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>

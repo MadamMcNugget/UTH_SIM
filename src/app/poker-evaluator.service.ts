@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpRequest, HttpEvent, HttpEventType } from '@angular/common/http';
 
 import { environment } from './../environments/environment';
-import { PlayerHandSim, PokerEvaluation } from './card.model';
+import { Decision, PlayerHandSim, PokerEvaluation } from './card.model';
+import { catchError, last, map, tap } from 'rxjs';
 
 const BACKEND_URL = environment.apiUrl + '/poker/';
 
@@ -21,20 +22,53 @@ export class PokerEvaluatorService {
 		return this.http.post<PokerEvaluation>( BACKEND_URL, hand );
 	}
 
-	simulateRound( hand: string[], index: number[] ){
-		const data ={
-			hand: hand,
-			index: index
-		}
+	simulateRound( hand: string[], index: number[], decision2: Decision[], decision3: Decision[], runCount: number ) {
 		console.log( 'poker-evaluator.service - evaluateRound( )' );
-		return this.http.post<PlayerHandSim>( BACKEND_URL + 'simulateRound', data );
+		const data = {
+			hand: hand,
+			index: index,
+			decision2: decision2,
+			decision3: decision3,
+			runCount: runCount
+		}
+		const req = new HttpRequest( 'POST', BACKEND_URL + 'simulateRound', data, {
+			reportProgress: true
+		} );
+		return this.http.request<PlayerHandSim>( req ).pipe(
+			map( event => this.getEventMessage( event, runCount ) ),
+			tap( message => this.showProgress( message ) ),
+			last() // return last (completed) message to caller
+		)
+	}
+	private getEventMessage( event: HttpEvent<PlayerHandSim>, runCount: number ): string {
+		console.log( 'returned event', event );
+		switch ( event.type ) {
+			case HttpEventType.Sent:
+				console.log( 'returned event', event );
+				return `HttpEventType.Sent`;
+
+			case HttpEventType.UploadProgress:
+				// Compute and show the % done:
+				const percentDone = event.total ? Math.round( 100 * event.loaded / event.total ) : 0;
+				return `HttpEventType.UploadProgress - some % simulated`;
+
+			case HttpEventType.Response:
+				return `HttpEventType.Response - simulation done!`;
+
+			default:
+				return `something went wrong`;
+		}
+	}
+
+	showProgress( message: string ){
+		console.log( message );
 	}
 
 	//------------------------------------------------------------------------
 	// helper functions
 	validateCard( card: string ): string | null {
 		let errorMsg = null;
-		console.log('validating card: ' + card);
+		console.log( 'validating card: ' + card );
 
 		const validNumber: string[] = [ 'A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2' ];
 		const validSuit: string[] = [ 's', 'h', 'c', 'd' ];

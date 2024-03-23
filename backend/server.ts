@@ -43,10 +43,10 @@ const onListening = () => {		// log that we are now listening to incoming reques
 	debug( "Listening on " + bind );
 };
 
-const port = normalizePort( "3000" || "8081" );		// "3000" is string but since that value we receive is typically a string, use string here. may use number
+const port = normalizePort( process.env['PORT'] || "3000" || "8081" );		// "3000" is string but since that value we receive is typically a string, use string here. may use number
 appp.set( "port", port );
 
 const server = http.createServer( appp );
 server.on( "error", onError );
 server.on( "listening", onListening );
-server.listen( port );
+server.listen( port, () => console.log( `listening on port ${ port }`) );

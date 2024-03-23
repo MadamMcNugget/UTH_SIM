@@ -1,9 +1,9 @@
 table {
-  width: 100%;
+	width: 100%;
 }
 
 th.mat-sort-header-sorted {
-  color: black;
+	color: black;
 }
 
 .parameter-card {
@@ -24,4 +24,21 @@ th.mat-sort-header-sorted {
 .parameter-index-input {
 	width: 100px;
 	padding-right: 1em;
+}
+
+.parameter-decision-card {
+	width: 320px;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.parameter-decision-input {
+	width: 100px;
+	padding-right: 1em;
+}
+
+.parameter-runcount-card {
+	width: 150px;
+	display: inline-block;
+	vertical-align: top;
 }
